@@ -1,6 +1,6 @@
 <template>
   <NavBarVue></NavBarVue>
-  <h1>Vue</h1>
+  <h1>Home</h1>
 </template>
 
 <script>
@@ -9,7 +9,7 @@ import NavBarVue from '@/components/NavBar.vue'
 
 
 export default {
-me: 'HomeView',
+  name: 'HomeView',
   components: {
     NavBarVue
   }
