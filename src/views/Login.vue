@@ -16,7 +16,6 @@
             class="w-100 mb-6 cinza-claro-5"
             type="email"
             :rules="emailRules"
-            hide-details
             required
             variant="outlined"
             density="compact"
@@ -26,10 +25,11 @@
           <v-text-field
             v-model="password"
             label="Senha"
-            class="w-100 mb-4"
+            class="w-100 mb-10"
             type="password"
             variant="outlined"
             density="compact"
+            :rules="passwordRules"
           >
           </v-text-field>
 
@@ -63,12 +63,24 @@ export default {
         (value) => {
           if (value) return true;
 
-          return "E-mail is requred.";
+          return "Digite seu e-mail";
         },
         (value) => {
           if (/.+@.+\..+/.test(value)) return true;
 
-          return "E-mail must be valid.";
+          return "E-mail inválido";
+        },
+      ],
+      passwordRules: [
+        (value) => {
+          if (value) return true;
+
+          return "Digite sua senha!";
+        },
+        (value) => {
+          if (value.length >= 8) return true;
+
+          return "A senha deve conter mais de 8 caracteres";
         },
       ],
     };
