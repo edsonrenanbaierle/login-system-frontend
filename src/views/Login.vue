@@ -54,12 +54,14 @@
 
 <script>
 export default {
-  name: "Login",
-  data() {
-    return {
-      email: "",
-      password: "",
-      emailRules: [
+  setup(){
+    //variveis
+    let password = ""
+    let email = ""
+
+
+    //rules
+    const emailRules = [
         (value) => {
           if (value) return true;
 
@@ -70,8 +72,9 @@ export default {
 
           return "E-mail inválido";
         },
-      ],
-      passwordRules: [
+      ] 
+
+    const passwordRules = [
         (value) => {
           if (value) return true;
 
@@ -82,9 +85,17 @@ export default {
 
           return "A senha deve conter mais de 8 caracteres";
         },
-      ],
-    };
-  },
+      ]
+
+
+    //retorno
+    return{
+      password,
+      passwordRules,
+      email,
+      emailRules
+    }
+  }
 };
 </script>
 

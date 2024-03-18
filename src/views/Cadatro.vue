@@ -54,6 +54,8 @@
           </v-text-field>
 
           <v-btn variant="outlined"> Cadastrar-se </v-btn>
+
+          <p id="error-message">Error</p>
         </v-form>
       </v-col>
     </v-row>
@@ -62,10 +64,17 @@
 
 <script>
 export default {
-  data: () => ({
-    valid: false,
-    fullName: "",
-    nameRules: [
+  setup() {
+    //variaveis
+    let fullName = "";
+    let valid = false;
+    let email = "";
+    let emailConfirmation = "";
+    let password = "";
+    let passwordConfirmation = "";
+
+    //rules
+    let nameRules = [
       (value) => {
         if (value) return true;
 
@@ -76,10 +85,9 @@ export default {
 
         return "Nome deve ter mais de 2 caracteres";
       },
-    ],
-    email: "",
-    emailConfirmation: "",
-    emailRules: [
+    ];
+
+    let emailRules = [
       (value) => {
         if (value) return true;
 
@@ -89,11 +97,10 @@ export default {
         if (/.+@.+\..+/.test(value)) return true;
 
         return "E-mail inválido";
-      }
-    ],
-    password: "",
-    passwordConfirmation: "",
-    passwordRules: [
+      },
+    ];
+
+    let passwordRules = [
       (value) => {
         if (value) return true;
 
@@ -104,8 +111,23 @@ export default {
 
         return "A senha deve conter mais de 8 caracteres";
       },
-    ],
-  }),
+    ];
+    
+
+
+    //retorno
+    return {
+      passwordRules,
+      emailRules,
+      nameRules,
+      fullName,
+      valid,
+      password,
+      passwordConfirmation,
+      email,
+      emailConfirmation
+    };
+  },
 };
 </script>
 
@@ -116,5 +138,13 @@ export default {
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+#error-message {
+  background: black;
+  color: red;
+  border-radius: 10px;
+  padding: 5px;
+  margin-top: 1rem;
 }
 </style>
