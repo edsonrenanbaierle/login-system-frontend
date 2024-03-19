@@ -2,7 +2,7 @@
   <v-app id="body" theme="dark">
     <v-row>
       <v-col class="d-flex align-center justify-center">
-        <v-form class="w-100 d-flex flex-column align-center">
+        <v-form id="form" class="w-100 d-flex flex-column align-center">
           <v-text-field
             label="Nome"
             variant="outlined"
@@ -20,6 +20,7 @@
             class="w-50 pb-3"
             :rules="emailRules"
             v-model="email"
+            type="email"
           >
           </v-text-field>
 
@@ -30,6 +31,7 @@
             class="w-50 pb-3"
             :rules="emailRules"
             v-model="emailConfirmation"
+            type="email"
           >
           </v-text-field>
 
@@ -40,6 +42,7 @@
             class="w-50 pb-3"
             v-model="password"
             :rules="passwordRules"
+            type="password"
           >
           </v-text-field>
 
@@ -50,12 +53,13 @@
             class="w-50 pb-3"
             v-model="passwordConfirmation"
             :rules="passwordRules"
+            type="password"
           >
           </v-text-field>
 
-          <v-btn variant="outlined"> Cadastrar-se </v-btn>
+          <p v-show="validError" id="error-message">{{ messageError }}</p>
 
-          <p id="error-message">Error</p>
+          <v-btn @click="createUser()" variant="outlined">Cadastrar-se</v-btn>
         </v-form>
       </v-col>
     </v-row>
@@ -63,15 +67,18 @@
 </template>
 
 <script>
+import { ref } from "vue";
+
 export default {
   setup() {
     //variaveis
-    let fullName = "";
-    let valid = false;
-    let email = "";
-    let emailConfirmation = "";
-    let password = "";
-    let passwordConfirmation = "";
+    let fullName = ref("");
+    let email = ref("");
+    let emailConfirmation = ref("");
+    let password = ref("");
+    let passwordConfirmation = ref("");
+    let messageError = ref("");
+    let validError = ref(false);
 
     //rules
     let nameRules = [
@@ -112,20 +119,96 @@ export default {
         return "A senha deve conter mais de 8 caracteres";
       },
     ];
-    
+
+    //função de criação e confirmação dos dados do formulario
+    const createUser = () => {
+      if (fullName.value === "") {
+        messageError.value = "Por Favor prencha o seu nome!";
+        validError.value = true;
+      } else if (!/.+@.+\..+/.test(email.value)) {
+        messageError.value =
+          "Por Favor prencha o campo de email de forma correta!";
+        validError.value = true;
+      } else if (!/.+@.+\..+/.test(emailConfirmation.value)) {
+        messageError.value =
+          "Por Favor prencha o campo de confirmação do email de forma correta!";
+        validError.value = true;
+      } else if (password.value === "") {
+        messageError.value = "Por Favor prencha o campo de senha!";
+        validError.value = true;
+      } else if (passwordConfirmation.value === "") {
+        messageError.value =
+          "Por Favor prencha o campo de confirmação de senha!";
+        validError.value = true;
+      } else if (email.value !== emailConfirmation.value) {
+        messageError.value = "E-mails digitados diferentes!";
+        validError.value = true;
+      } else if (password.value !== passwordConfirmation.value) {
+        messageError.value = "Senhas não compatíveis";
+        validError.value = true;
+      } else {
+        createUserRequest();
+        clearData();
+      }
+    };
+
+    async function createUserRequest() {
+      const user = {
+        name: fullName.value,
+        email: email.value,
+        password: password.value,
+        role: "USER",
+      };
+
+      const data = JSON.stringify(user);
+
+      try {
+        const response = await fetch(`http://localhost:8080/user`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: data,
+        });
+
+        if (!response.ok) {
+          const erroMessageObject = JSON.parse(await response.text());
+
+          alert(erroMessageObject.message);
+        }else {
+          alert("Usuario cadastrado com sucesso")
+        }
 
 
-    //retorno
+      } catch (error) {
+        alert("Erro durante a solicitação:", error.message);
+      }
+    }
+
+    //função de limpar e resetar o formulário
+    const clearData = () => {
+      validError.value = false;
+      const form = document.getElementById("form");
+      form.reset();
+      fullName.value = "";
+      email.value = "";
+      emailConfirmation.value = "";
+      password.value = "";
+      passwordConfirmation.value = "";
+      messageError.value = "";
+    };
+
+    //retorno para ser possivel utilização das variaveis
     return {
       passwordRules,
       emailRules,
       nameRules,
       fullName,
-      valid,
       password,
       passwordConfirmation,
       email,
-      emailConfirmation
+      emailConfirmation,
+      messageError,
+      validError,
+      createUser,
     };
   },
 };
@@ -141,10 +224,12 @@ export default {
 }
 
 #error-message {
-  background: black;
+  background: white;
   color: red;
   border-radius: 10px;
   padding: 5px;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
 }
 </style>
+import { presets } from "babel.config";
