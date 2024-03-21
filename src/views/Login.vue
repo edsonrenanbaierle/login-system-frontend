@@ -44,6 +44,8 @@
 
           <div class="g-signin2" data-onsuccess="onSignIn"></div>
 
+          <p v-show="messageValue" id="message">Credenciais Inválidas</p>
+
           <p style="text-align: center">Não é cadastrado?</p>
 
           <router-link id="router-cadastro" to="/cadastro"
@@ -51,7 +53,6 @@
           >
         </v-form>
       </v-col>
-
       <v-col id="my-app" cols="6"> </v-col>
     </v-row>
   </v-app>
@@ -59,12 +60,12 @@
 
 <script>
 import { ref } from "vue";
-import store from "@/store";
 export default {
   setup() {
     //variveis
     let password = ref("");
     let email = ref("");
+    let messageValue = ref(false);
 
     //rules
     const emailRules = [
@@ -119,11 +120,12 @@ export default {
         });
 
         if (!response.ok) {
-          alert("Por favor confirme os dados");
+          message.value = "Por favor confirme os dados!";
+          messageValue.value = true;
         } else {
           const token = await response.text();
-          localStorage.setItem("token", token)
-          localStorage.setItem("email", email.value)
+          localStorage.setItem("token", token);
+          localStorage.setItem("email", email.value);
           window.location.href = "/home";
           clearDataForm();
         }
@@ -146,6 +148,7 @@ export default {
       email,
       emailRules,
       login,
+      messageValue,
     };
   },
 };
@@ -171,6 +174,14 @@ export default {
   background-position: center center;
   background-size: 100%;
   background-repeat: no-repeat;
+}
+
+#message {
+  background-color: rgba(255, 2, 2, 0.13);
+  text-align: center;
+  padding: 5px;
+  margin: 10px;
+  color: red;
 }
 
 @media only screen and (max-width: 960px) {
