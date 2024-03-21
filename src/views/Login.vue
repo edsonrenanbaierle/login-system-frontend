@@ -197,5 +197,9 @@ export default {
     background-size: 100%;
     background-repeat: no-repeat;
   }
+
+  #message {
+    font-size: 13px;
+  }
 }
 </style>
