@@ -172,12 +172,12 @@ export default {
         if (!response.ok) {
           const erroMessageObject = JSON.parse(await response.text());
 
-          alert(erroMessageObject.message);
-        }else {
-          alert("Usuario cadastrado com sucesso")
+          messageError.value = erroMessageObject.message;
+          validError.value = true;
+        } else {
+          messageError.value = "Usuario cadastrado com sucesso";
+          validError.value = true;
         }
-
-
       } catch (error) {
         alert("Erro durante a solicitação:", error.message);
       }
@@ -232,4 +232,3 @@ export default {
   font-size: 0.8rem;
 }
 </style>
-import { presets } from "babel.config";

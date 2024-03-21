@@ -9,7 +9,7 @@
         xl="6"
         class="d-flex align-center justify-center"
       >
-        <v-form class="d-flex flex-column w-50 h100">
+        <v-form class="d-flex flex-column w-50 h100" id="form">
           <v-text-field
             v-model="email"
             label="Email"
@@ -33,7 +33,12 @@
           >
           </v-text-field>
 
-          <v-btn variant="outlined" class="w-50" location="center">
+          <v-btn
+            variant="outlined"
+            class="w-50"
+            location="center"
+            @click="login()"
+          >
             Login
           </v-btn>
 
@@ -53,49 +58,96 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import store from "@/store";
 export default {
-  setup(){
+  setup() {
     //variveis
-    let password = ""
-    let email = ""
-
+    let password = ref("");
+    let email = ref("");
 
     //rules
     const emailRules = [
-        (value) => {
-          if (value) return true;
+      (value) => {
+        if (value) return true;
 
-          return "Digite seu e-mail";
-        },
-        (value) => {
-          if (/.+@.+\..+/.test(value)) return true;
+        return "Digite seu e-mail";
+      },
+      (value) => {
+        if (/.+@.+\..+/.test(value)) return true;
 
-          return "E-mail inválido";
-        },
-      ] 
+        return "E-mail inválido";
+      },
+    ];
 
     const passwordRules = [
-        (value) => {
-          if (value) return true;
+      (value) => {
+        if (value) return true;
 
-          return "Digite sua senha!";
-        },
-        (value) => {
-          if (value.length >= 8) return true;
+        return "Digite sua senha!";
+      },
+      (value) => {
+        if (value.length >= 8) return true;
 
-          return "A senha deve conter mais de 8 caracteres";
-        },
-      ]
+        return "A senha deve conter mais de 8 caracteres";
+      },
+    ];
 
+    function login() {
+      if (!/.+@.+\..+/.test(email.value)) {
+        return null;
+      } else if (password.value < 8) {
+        return null;
+      } else {
+        loginPostMethod();
+      }
+    }
+
+    async function loginPostMethod() {
+      const user = {
+        email: email.value,
+        password: password.value,
+      };
+
+      const data = JSON.stringify(user);
+
+      try {
+        const response = await fetch("http://localhost:8080/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: data,
+        });
+
+        if (!response.ok) {
+          alert("Por favor confirme os dados");
+        } else {
+          const token = await response.text();
+          localStorage.setItem("token", token)
+          localStorage.setItem("email", email.value)
+          window.location.href = "/home";
+          clearDataForm();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    function clearDataForm() {
+      password.value = "";
+      email.value = "";
+      const form = document.getElementById("form");
+      form.reset();
+    }
 
     //retorno
-    return{
+    return {
       password,
       passwordRules,
       email,
-      emailRules
-    }
-  }
+      emailRules,
+      login,
+    };
+  },
 };
 </script>
 
